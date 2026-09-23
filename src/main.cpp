@@ -1,29 +1,37 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 
-const int LED_PIN = 23;
-
-bool ledState = LOW;
-unsigned long previousMillis = 0;
-const unsigned long interval = 1000;
+Adafruit_BME280 bme;
 
 void setup() {
-    pinMode(LED_PIN, OUTPUT);
     Serial.begin(115200);
+
+    bool sensorFound = bme.begin(0x76);
+
+    if (!sensorFound) {
+        Serial.println("Could not find BME280 sensor!");
+        return;
+    }
+
+    Serial.println("BME280 sensor found!");
 }
 
 void loop() {
-    unsigned long currentMillis = millis();
+    Serial.print("Temperature: ");
+    Serial.print(bme.readTemperature());
+    Serial.println(" C");
 
-    if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
+    Serial.print("Humidity: ");
+    Serial.print(bme.readHumidity());
+    Serial.println(" %");
 
-        ledState = !ledState;
-        digitalWrite(LED_PIN, ledState);
+    Serial.print("Pressure: ");
+    Serial.print(bme.readPressure() / 100.0F);
+    Serial.println(" hPa");
 
-        if (ledState == HIGH) {
-            Serial.println("LED ON");
-        } else {
-            Serial.println("LED OFF");
-        }
-    }
+    Serial.println();
+
+    delay(2000);
 }
