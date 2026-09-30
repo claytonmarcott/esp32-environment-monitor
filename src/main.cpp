@@ -4,6 +4,8 @@
 #include <Adafruit_BME280.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <WiFi.h>
+#include "secrets.h"
 
 // OLED dimensions
 #define SCREEN_WIDTH 128
@@ -13,12 +15,29 @@
 #define OLED_ADDRESS 0x3C
 #define BME_ADDRESS 0x76
 
+
 Adafruit_BME280 bme;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
 
 void setup() {
     Serial.begin(115200);
     delay(1000);
+
+    Serial.println("Connecting to WiFi...");
+
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    Serial.println("");
+    Serial.println("WiFi connected!");
+
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
 
     // Start I2C
     // SDA = D21
